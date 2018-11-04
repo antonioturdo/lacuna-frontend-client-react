@@ -1,0 +1,18 @@
+{
+    "alias": "link_to_screen",
+    "name": "Link to screen",
+    "description": "A link to a sub-screen component",
+    "parameters": 
+    [
+        {
+            "alias": "text",
+            "name": "Text",
+            "type": "string",
+            "required": true
+        }
+    ],
+    "allowed_children": ["blank_screen", "standard_screen"],
+    "is_screen": false,
+    "break_rendering": true,
+    "extends": "component"
+}

@@ -38,12 +38,29 @@ const initialState = {};
 const store = configureStore(initialState, history);
 const MOUNT_NODE = document.getElementById('app');
 
+////////////
+import ThemeContext from './themeContext'
+
+const queryString = require('query-string');
+const parsed = queryString.parse(location.search);
+
+const theme = Object.prototype.hasOwnProperty.call(parsed,'theme') && parsed.theme === 'red' ? {
+  BlockInput: {
+    input: {
+      border: '1px solid red', 
+    }
+  }
+} : {}
+/////////////
+
 const render = messages => {
   ReactDOM.render(
     <Provider store={store}>
       <LanguageProvider messages={messages}>
         <ConnectedRouter history={history}>
-          <App />
+          <ThemeContext.Provider value={theme}>
+            <App />
+          </ThemeContext.Provider>
         </ConnectedRouter>
       </LanguageProvider>
     </Provider>,

@@ -1,0 +1,17 @@
+{
+    "alias": "block_input",
+    "name": "Block input",
+    "description": "A block input element. It shows an input, a label and, if any, related errors",
+    "parameters": 
+    [
+        {
+            "alias": "label",
+            "name": "Label",
+            "type": "string",
+            "required": true
+        }    
+    ],
+    "extends": "input",
+    "has_data": true
+}
+    

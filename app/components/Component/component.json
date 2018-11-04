@@ -1,0 +1,8 @@
+{
+    "alias": "component",
+    "name": "Component",
+    "description": "Root component type",
+    "parameters": [],
+    "allowed_children": [],
+    "is_screen": false
+}

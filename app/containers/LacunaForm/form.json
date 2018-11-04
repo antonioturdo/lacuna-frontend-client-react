@@ -1,0 +1,39 @@
+{
+    "structure": {
+        "component": "screen",
+        "parameters": {
+            "title": "Form semplice"
+        },
+        "children": [
+            {
+                "my_vertical_form": {
+                    "component": "vertical_form",
+                    "children": [
+                        {
+                            "nome": {
+                                "component": "block_input",
+                                "parameters": {
+                                        "label": "Nome",
+                                        "type": "text",
+                                        "required": true,
+                                        "important": false
+                                    }
+                            }
+                        },
+                        {
+                            "cognome": {
+                                "component": "block_input",
+                                "parameters": {
+                                        "label": "Cognome",
+                                        "type": "text",
+                                        "required": true,
+                                        "important": false
+                                    }
+                            }
+                        }                    
+                    ]
+                }
+            }
+        ]
+    }  
+}

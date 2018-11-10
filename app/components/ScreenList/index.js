@@ -1,5 +1,5 @@
 import React from 'react';
-import withCustomTheme from 'utils/withCustomTheme'
+import withTheme from 'utils/withTheme'
 
 class ScreenList extends React.PureComponent {
 
@@ -22,4 +22,4 @@ const defaultStyle = {
     }
 }
 
-export default withCustomTheme(ScreenList, defaultStyle)
+export default withTheme(ScreenList, defaultStyle)

@@ -32,7 +32,7 @@ module.exports = options => ({
           loader: 'babel-loader',
           options: options.babelQuery,
         },
-      },
+      },    
       {
         // Preprocess our own .css files
         // This is the place to add your own loaders (e.g. sass/less etc.)

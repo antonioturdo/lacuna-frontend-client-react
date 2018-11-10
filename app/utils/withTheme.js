@@ -1,7 +1,7 @@
 import ThemeContext from '../themeContext'
 import React from 'react';
 
-const withCustomTheme = (Component, defaultStyle) => {
+const withTheme = (Component, defaultComponents) => {
 
   return class extends React.Component {
 
@@ -12,9 +12,10 @@ const withCustomTheme = (Component, defaultStyle) => {
     }
 
     render() {
-      const themedStyle = {...defaultStyle, ...this.context[Component.name]}
+      const themedComponents = {...defaultComponents, ...this.context[Component.name]}
+
       return (
-        <Component {...this.props} themedStyle={themedStyle}>
+        <Component {...this.props} themedComponents={themedComponents}>
           {this.props.children}
         </Component>
       )
@@ -22,4 +23,4 @@ const withCustomTheme = (Component, defaultStyle) => {
   }
 }
 
-export default withCustomTheme;
+export default withTheme;

@@ -2,34 +2,29 @@ import React from 'react';
 
 import ScreenFinder from 'services/ScreenFinder'
 import FormParser from 'services/FormParser'
+import ThemeLoader from 'services/ThemeLoader'
+import ThemeContext from 'themeContext'
 
 import json from './definition.json'
 
 import Breadcrumbs from './Breadcrumbs'
 import SaveButton from './SaveButton'
 
-////////////
-import ThemeContext from 'themeContext'
-
-const queryString = require('query-string');
-const parsed = queryString.parse(location.search);
-
-import theme_a from 'themes/theme_a'
-
-const theme = Object.prototype.hasOwnProperty.call(parsed,'theme') && parsed.theme === 'red' ? theme_a : {}
-/////////////
-
-export default class LacunaForm extends React.PureComponent {
+export default class LacunaForm extends React.Component {
     constructor() {
         super()
         
-        let state = ScreenFinder.findByQuery(json)
-        state.theme = {}
-        this.state = state
+        this.state = {...ScreenFinder.findByQuery(json), theme : {}}
     }
 
     componentDidMount() {
-        this.setState((state) => {theme: theme_a})
+        const theme = 'theme_a'
+
+        if (theme != null) {
+            ThemeLoader.dymamicLoad('theme_a').then((theme) => {
+                this.setState({theme: theme.default})
+            })
+        }
     }
 
     componentWillReceiveProps() {

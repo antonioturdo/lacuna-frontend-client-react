@@ -38,7 +38,7 @@ const components = {
 class ComponentLoader {
     static getComponentDefinition(component) {  
         // console.log(component)
-        console.log(components.hasOwnProperty(component))
+        // console.log(components.hasOwnProperty(component))
         let definition = components[component].definition
 
         /*if (definition.extends) {

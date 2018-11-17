@@ -3,7 +3,10 @@ import { Form } from 'reactstrap';
 import { FormGroup, Label, Input } from 'reactstrap';
 import { Breadcrumb, BreadcrumbItem } from 'reactstrap';
 import { ListGroup, ListGroupItem } from 'reactstrap';
-import { Navbar, Button } from 'reactstrap';
+import { Navbar, Button, Alert } from 'reactstrap';
+import { Container, Row, Col } from 'reactstrap';
+
+import styled from 'styled-components';
 
 import React from 'react';
 
@@ -50,16 +53,44 @@ const theme = {
 
   StatusBar: {
     container: class extends React.Component {
+
       render() {
+        const StyledContainer = styled(Container)`
+            padding: 0.25rem;
+            align-items: center;
+            background-color: #e9ecef;
+          `;
+
+          const StyledRow = styled(Row)`
+            padding: 0.25rem;
+            align-items: center;
+          `;
+          
           return (
-          <Navbar style={{'backgroundColor': '#eee'}} {...this.props}>{this.props.children}</Navbar>
+              <StyledContainer {...this.props}>
+                <StyledRow>{this.props.children}</StyledRow>
+              </StyledContainer>
           )
       }
     },
+
+    text: class extends React.Component {
+
+      render() {
+          const Text = styled.div`
+              
+          `;
+
+          return (
+            <Col xs={12} sm={10}><Text className={"text-muted"} {...this.props}>{this.props.children}</Text></Col>
+          )
+      }
+    },
+
     saveButton: class extends React.Component {
       render() {
           return (
-          <Button color="primary" {...this.props}>{this.props.children}</Button >
+            <Col xs={12} sm={2}><Button style={{width: '100%'}} color="primary" {...this.props}>{this.props.children}</Button></Col>
           )
       }
     },

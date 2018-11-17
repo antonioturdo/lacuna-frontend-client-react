@@ -13,6 +13,7 @@ import SaveButton from './SaveButton'
 import StatusBar from './StatusBar'
 
 import update from 'immutability-helper'
+import { isThisSecond } from 'date-fns';
 
 export default class LacunaForm extends React.Component {
     constructor() {
@@ -21,8 +22,14 @@ export default class LacunaForm extends React.Component {
         this.state = {
             screen: ScreenFinder.findByQuery(json), 
             theme : {},
-            data: {}
+            data: {},
+            modificationsToSave: false,
+            updateInProgress: false,
+            lastUpdate: new Date(),
+            pulse: 0
         }
+
+        this.updateInterval = null
     }
 
     componentDidMount() {
@@ -32,6 +39,18 @@ export default class LacunaForm extends React.Component {
             ThemeLoader.dymamicLoad(theme).then((theme) => {
                 this.setState({theme: theme.default})
             })
+        }
+
+        const interval = 10
+
+        this.updateInterval = setInterval(() => {
+            this.setState((prevState) => {return {pulse: prevState.pulse + 1}})
+        }, interval * 1000)
+    }
+
+    componentWillUnmount() {
+        if (this.updateInterval) {
+            clearInterval(this.updateInterval)
         }
     }
 
@@ -51,7 +70,7 @@ export default class LacunaForm extends React.Component {
     onDataChange = (fullPath, data) => {
         const objectData = DataHandler.setByPath({}, fullPath, {"$set": data})
         const newData = update(this.state.data, objectData)   
-        this.setState({data: newData})
+        this.setState({data: newData, modificationsToSave: true})
     }
 
     renderComponent(object, parentName = null) {
@@ -78,7 +97,11 @@ export default class LacunaForm extends React.Component {
 
     onSave = () => {
         // console.log(JSON.stringify(this.state.data))
-        setTimeout(() => {this.props.history.push('/form')}, 300)
+        this.props.history.push('/form')
+        this.setState({updateInProgress: true})
+        setTimeout(() => {
+            this.setState({modificationsToSave: false, updateInProgress: false, lastUpdate: new Date()})
+        }, 2300)
     }
 
     render() {   
@@ -86,7 +109,11 @@ export default class LacunaForm extends React.Component {
             <ThemeContext.Provider value={this.state.theme}>
                 <Breadcrumbs breadcrumbs={this.state.screen.breadcrumbs}></Breadcrumbs>
                 {this.renderComponent(this.state.screen.screen)}
-                {<StatusBar onSave={this.onSave}></StatusBar>}
+                <StatusBar 
+                    onSave={this.onSave} 
+                    modificationsToSave={this.state.modificationsToSave} 
+                    updateInProgress={this.state.updateInProgress} 
+                    lastUpdate={this.state.lastUpdate}/>
             </ThemeContext.Provider>
         )
     }

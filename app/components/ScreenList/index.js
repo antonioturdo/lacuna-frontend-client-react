@@ -17,12 +17,14 @@ class ScreenList extends React.PureComponent {
 const defaultComponents = {
     list: styled.ul`
         list-style: none;
-        padding: 0.5rem 0
+        padding: 0
     `,
 
     element: styled.li`
-        ':nthChild(even)': {
-            background: '#aaa',
+        padding: 0.25rem;
+        
+        &:nth-child(even) {
+            background-color: #eee;
         }
     `
 }

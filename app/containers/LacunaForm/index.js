@@ -10,10 +10,9 @@ import json from './definition.json'
 
 import Breadcrumbs from './Breadcrumbs'
 import SaveButton from './SaveButton'
+import StatusBar from './StatusBar'
 
 import update from 'immutability-helper'
-
-import {Form} from 'reactstrap';
 
 export default class LacunaForm extends React.Component {
     constructor() {
@@ -87,7 +86,7 @@ export default class LacunaForm extends React.Component {
             <ThemeContext.Provider value={this.state.theme}>
                 <Breadcrumbs breadcrumbs={this.state.screen.breadcrumbs}></Breadcrumbs>
                 {this.renderComponent(this.state.screen.screen)}
-                {this.state.screen.hasData && <SaveButton onSave={this.onSave}></SaveButton>}
+                {<StatusBar onSave={this.onSave}></StatusBar>}
             </ThemeContext.Provider>
         )
     }

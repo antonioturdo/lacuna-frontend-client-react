@@ -2,7 +2,6 @@ import React from 'react';
 import withTheme from 'utils/withTheme'
 import styled from 'styled-components';
 
-
 class BlockInput extends React.PureComponent {
     render() {
         const Block = this.props.themedComponents.block;

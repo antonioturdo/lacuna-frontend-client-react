@@ -1,6 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Col, FormGroup, Label, Input } from 'reactstrap';
 import React from 'react';
+import reactstrap from 'themes/reactstrap_4'
 
 const formGroup = () => {
     return class extends React.Component {
@@ -40,12 +41,12 @@ const input = () => {
     }
 }
 
-const theme = {
+const theme = Object.assign(reactstrap, {
   BlockInput: {
     block: formGroup(),
     label: label(),
     input: input()
   }
-}
+})
 
 export default theme

@@ -33,7 +33,7 @@ export default function App() {
     <AppWrapper>
       <Switch>
         <Route exact path="/" component={HomePage} />
-        <Route path="/form" component={LacunaForm} />        
+        <Route path="/form/:id" component={LacunaForm} />        
         <Route component={NotFoundPage} />
       </Switch>
       <GlobalStyle />

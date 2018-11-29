@@ -16,8 +16,8 @@ class Breadcrumbs extends React.PureComponent {
         const ActiveItem = this.props.themedComponents.activeItem
         const Separator = this.props.themedComponents.separator
 
-        if (breadcrumb.path) {
-            const to = `/form${breadcrumb.path !== 'structure' ? '?screen='+breadcrumb.path : ''}`
+        if (breadcrumb.hasOwnProperty('path')) {
+            const to = `/form/${this.props.formId}${breadcrumb.path !== '' ? '?screen='+breadcrumb.path : ''}`
             element = <Item><Link to={to}>{breadcrumb.label}</Link></Item>
         } else {
             element = <ActiveItem>{breadcrumb.label}</ActiveItem>

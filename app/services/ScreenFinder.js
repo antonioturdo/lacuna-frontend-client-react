@@ -4,6 +4,9 @@ import FormParser from './FormParser'
 export default class ScreenFinder {
 
     static findByQuery(form) {
+        // temporary workaround to remove _id, _rev, ... 
+        form = {structure: form.structure}
+
         const queryString = require('query-string');
         const parsed = queryString.parse(location.search);
         
@@ -20,15 +23,16 @@ export default class ScreenFinder {
         screenTitle = ScreenFinder.getScreenTitle(screen)
         breadcrumbs.push({label: screenTitle})  
         hasData = FormParser.hasScreenData(screen)
-
+        
         return {screenName, screen, breadcrumbs, screenTitle, hasData}
     }
     
     static findByPath(form, path) {
-        let screen = form
+        let screen = form.structure
         let breadcrumbs = []
         let currentPath = ''
         path.forEach((node) => {
+            // if the current component is a screen, let's add it to the breadcrumbs
             if (screen.component) {
                 const componentDefinition = ComponentLoader.getComponentDefinition(screen.component)
                 if (componentDefinition.is_screen) {
@@ -36,8 +40,10 @@ export default class ScreenFinder {
                 }
             }
             
+            // update the current path
             currentPath = `${currentPath === '' ? node : `${currentPath}.${node}`}`
             
+            // the next component could be just there or in the children, let's find it
             if (screen[node]) {
                 screen = screen[node]
             } else if (screen.children) {
@@ -52,6 +58,7 @@ export default class ScreenFinder {
             }
         })
         
+        // the screen we are looking for is the only children of the found component (tipically a link)
         if (screen.children && screen.children.length == 1) {
             screen = screen.children[0]
             return {screen, breadcrumbs}
@@ -61,7 +68,9 @@ export default class ScreenFinder {
     }
     
     static getScreenTitle(screen) {
-        const screenObject = screen[Object.keys(screen)[0]]
+        const key = Object.keys(screen)[0]
+        const screenObject = screen[key]
+
         return screenObject.parameters.title;    
     }
 }

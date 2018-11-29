@@ -1,31 +1,33 @@
 import React from 'react';
 
+import ThemeContext from 'themeContext'
+
 import ScreenFinder from 'services/ScreenFinder'
 import FormParser from 'services/FormParser'
 import ThemeLoader from 'services/ThemeLoader'
-import ThemeContext from 'themeContext'
 import DataHandler from 'services/DataHandler'
-
-import json from './definition.json'
+import LacunApi from 'services/LacunaApi'
 
 import Breadcrumbs from './Breadcrumbs'
-import SaveButton from './SaveButton'
 import StatusBar from './StatusBar'
 
 import update from 'immutability-helper'
-import { isThisSecond } from 'date-fns';
+import Loader from 'components/Loader'
 
 export default class LacunaForm extends React.Component {
-    constructor() {
-        super()
+    constructor(props) {
+        super(props)
         
         this.state = {
-            screen: ScreenFinder.findByQuery(json), 
-            theme : {},
+            formId: this.props.match.params.id,
+            loading: true,
+            definition: null,
             data: {},
+            screen: null, 
+            theme : {},
             modificationsToSave: false,
             updateInProgress: false,
-            lastUpdate: new Date(),
+            lastUpdate: null,
             pulse: 0
         }
 
@@ -33,19 +35,29 @@ export default class LacunaForm extends React.Component {
     }
 
     componentDidMount() {
-        const theme = 'reactstrap_4' // 'theme_a'
-
-        if (theme != null) {
-            ThemeLoader.dymamicLoad(theme).then((theme) => {
-                this.setState({theme: theme.default})
+        LacunApi.getForm(this.state.formId)
+        .then(form => {
+            const screen = ScreenFinder.findByQuery(form.definition)
+            const lastUpdate = new Date(form.update_date);
+            this.setState( { 
+                loading: false, 
+                definition: form.definition,
+                data: form.data, 
+                screen,
+                lastUpdate 
             })
-        }
 
-        const interval = 10
+            if (form.definition.hasOwnProperty('theme')) {
+                ThemeLoader.dymamicLoad(form.definition.theme)
+                .then((theme) => this.setState({theme: theme.default}))                
+            }
 
-        this.updateInterval = setInterval(() => {
-            this.setState((prevState) => {return {pulse: prevState.pulse + 1}})
-        }, interval * 1000)
+            const interval = 10
+
+            this.updateInterval = setInterval(() => {
+                this.setState((prevState) => {return {pulse: prevState.pulse + 1}})
+            }, interval * 1000)            
+        })
     }
 
     componentWillUnmount() {
@@ -55,7 +67,6 @@ export default class LacunaForm extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        // console.log(nextProps)
         this.onScreenChange()
     }
 
@@ -64,7 +75,9 @@ export default class LacunaForm extends React.Component {
     }
 
     onScreenChange = () => {
-        this.setState({screen: ScreenFinder.findByQuery(json)})    
+        if (this.state.definition != null) {
+            this.setState({screen: ScreenFinder.findByQuery(this.state.definition)})    
+        }
     }
 
     onDataChange = (fullPath, data) => {
@@ -75,19 +88,27 @@ export default class LacunaForm extends React.Component {
 
     renderComponent(object, parentName = null) {
         const {componentName, component, props, children} = FormParser.parseComponent(object)
-        
-        const name = parentName ? `${parentName}.${componentName}` : componentName
+
+        let name 
+        if (parentName === null && this.state.screen.screenName === null) {
+            // just for the root
+            name = ''
+        } else {
+            name = parentName ?  `${parentName}.${componentName}` : componentName
+        }
+
         const ComponentToRender = component.implementation
         const childrenToRender = component.definition.break_rendering ? null : children.map((child) => this.renderComponent(child, name))
 
         const fullName = `${this.state.screen.screenName ? this.state.screen.screenName + '.' : ''}${name}`
+
         const data = DataHandler.getByPath(this.state.data, fullName)
         return (
-            <ComponentToRender 
+            <ComponentToRender
+                formId={this.state.formId} 
                 key={componentName} 
                 {...props} 
                 name={fullName}
-                initialData="ciccio" 
                 data={data} 
                 onDataChange={this.onDataChange}>
                     {childrenToRender}
@@ -96,24 +117,35 @@ export default class LacunaForm extends React.Component {
     }
 
     onSave = () => {
-        // console.log(JSON.stringify(this.state.data))
-        this.props.history.push('/form')
+        // this.props.history.push('/form/'+this.state.formId)
         this.setState({updateInProgress: true})
-        setTimeout(() => {
+        LacunApi.saveFormData(this.state.formId, this.state.data)
+        .then((success) => {
             this.setState({modificationsToSave: false, updateInProgress: false, lastUpdate: new Date()})
-        }, 2300)
+        })
+        .catch((error) => {
+            this.setState({updateInProgress: false})
+        })
     }
 
-    render() {   
+    renderFormContent() {
         return (
-            <ThemeContext.Provider value={this.state.theme}>
-                <Breadcrumbs breadcrumbs={this.state.screen.breadcrumbs}></Breadcrumbs>
+            <React.Fragment>
+                <Breadcrumbs breadcrumbs={this.state.screen.breadcrumbs} formId={this.state.formId}></Breadcrumbs>
                 {this.renderComponent(this.state.screen.screen)}
                 <StatusBar 
                     onSave={this.onSave} 
                     modificationsToSave={this.state.modificationsToSave} 
                     updateInProgress={this.state.updateInProgress} 
                     lastUpdate={this.state.lastUpdate}/>
+            </React.Fragment>
+        )
+    }
+
+    render() {
+        return (
+            <ThemeContext.Provider value={this.state.theme}>
+                {this.state.loading ? <Loader/> : this.renderFormContent()}
             </ThemeContext.Provider>
         )
     }

@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 export default class LinkToScreen extends React.PureComponent {
 
     render() {
-        return <Link to={`/form?screen=${this.props.name}`}>{this.props.text}</Link>
+        const to = `/form/${this.props.formId}?screen=${this.props.name}`
+        return <Link to={to}>{this.props.text}</Link>
     }
 
 }
